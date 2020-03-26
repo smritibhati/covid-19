@@ -1,0 +1,25 @@
+body{
+    background-color:#DBE5FF;
+    font-family: Tahoma, Geneva, sans-serif;
+}
+nav{
+    background-color:#5985FF;
+}
+.navbar{
+    color: white;
+}
+.card-body{
+    text-align: center;
+    padding-left: 0%;
+    padding-bottom: 0%;
+    padding-right: 0%;
+}
+
+canvas{
+    margin-left: -2%;
+}
+.p-2{
+    flex-basis: 5%;
+    flex-grow: 1;
+    max-width: 50%;
+}
