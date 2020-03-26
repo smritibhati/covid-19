@@ -13,13 +13,23 @@ nav{
     padding-left: 0%;
     padding-bottom: 0%;
     padding-right: 0%;
+    margin-bottom: -0.5%;
+    
 }
-
-canvas{
+canvas.insidecard{
     margin-left: -2%;
+    margin-bottom: -2%;
 }
 .p-2{
     flex-basis: 5%;
     flex-grow: 1;
-    max-width: 50%;
+    max-width: 45%;
 }
+.card-title{
+    color: darkgrey;
+    text-transform: uppercase;
+}
+/* #history{
+    background-color: white;
+   
+} */
