@@ -81,15 +81,39 @@ request.onload = function() {
     const timeid = document.querySelector('#time');
     const timeobj = obj.lastRefreshed.split("T");
     
-    timeid.textContent = "Statistics updated at " + timeobj[0] + ", " + timeobj[1].split(".")[0];
+    timeid.textContent = "Numbers last updated: " + timeobj[0] + ", " + timeobj[1].split(".")[0];
     console.log(obj);
     var labels = [];
     var data=[];
     obj.data.forEach(element => {
        labels.push(element.day.split("2020-")[1]);
        data.push(element.summary.total);
+
     });
-    console.log(data.slice(-11,0));
+    let statedict = {};
+    let h=0;
+    const temp = today.regional;
+
+    temp.forEach(elem => {
+        statedict[elem.loc] = elem.totalConfirmed;
+       
+    })
+
+    console.log(statedict);
+    const items = Object.keys(statedict).map(function(key) {
+        return [key, statedict[key]];
+    });
+      
+    items.sort(function(first, second) {
+        return second[1] - first[1];
+    });
+    
+    statedict = {};
+    items.forEach(elem=>{
+        if(elem[1]>10)
+        statedict[elem[0]]=elem[1];
+    })
+    console.log(statedict);
     var ctx = document.getElementById('history');
     var myChart = new Chart(ctx, {
         type: 'line',
@@ -107,6 +131,7 @@ request.onload = function() {
             }]
         },
         options: {
+            responsive: true,
             elements: {
                 point:{
                     radius: 3
@@ -115,10 +140,31 @@ request.onload = function() {
             legend: {
                 display: false,
             },
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        let curr =  tooltipItem.yLabel;
+                        return curr;
+                        
+                    },
+                    afterLabel: function(tooltipItem, data) {
+                        let prevIndex = tooltipItem.index-1;
+                        let curr =  tooltipItem.yLabel;
+                        let prev = prevIndex>=0?data.datasets[0].data[prevIndex]:curr;
+                        
+                        let incr = curr-prev;
+                        let label = "(+" + incr + ")";
+
+                        console.log(label);
+                        console.log(incr);
+                        return label;
+                    }
+                }
+            },
             scales: {
                 xAxes:[{
                     ticks: {
-                        display:true
+                        display:true,
                     },
                     scaleLabel: {
                         display: true,
@@ -135,35 +181,35 @@ request.onload = function() {
                         beginAtZero:true
                     },
                     // gridLines: {
-                    //     color: "rgba(0, 0, 0, 0)",
-                    //     drawBorder: false,
+                    //     color: "rgba(0, 0, 0, 0.5)",
+                    //     drawBorder: true,
                     // },
                 }]
             }
         }
 
     });
-
-    var ctx = document.getElementById('state');
-    var myChart = new Chart(ctx, {
-        type: 'line',
+    
+    var ctx2 = document.getElementById('state');
+    var myBarChart = new Chart(ctx2, {
+        type: 'bar',
         data: {
-            labels: labels.slice(len-11,len),
+            labels: Object.keys(statedict),
             datasets: [{
                 label: '',
-                data: data.slice(len-11,len),
-                
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                ],
-                borderWidth: 2,
-                fill: false
+                data: Object.keys(statedict).map(function (key) 
+                        { 
+                           return statedict[key]; 
+                        }),
+                borderWidth: 1,
+                backgroundColor: 'rgba(0, 148, 255, 0.3)' ,
             }]
         },
         options: {
+            responsive: true,
             elements: {
                 point:{
-                    radius: 0
+                    radius: 3
                 }
             },
             legend: {
@@ -171,6 +217,9 @@ request.onload = function() {
             },
             scales: {
                 xAxes:[{
+                    ticks: {
+                        display:true,
+                    },
                     gridLines: {
                         color: "rgba(0, 0, 0, 0)",
                         drawBorder: false,
@@ -181,15 +230,70 @@ request.onload = function() {
                     ticks: {
                         beginAtZero:true
                     },
-                    gridLines: {
-                        color: "rgba(0, 0, 0, 0)",
-                        drawBorder: false,
-                    },
+                    // gridLines: {
+                    //     color: "rgba(0, 0, 0, 0.5)",
+                    //     drawBorder: true,
+                    // },
                 }]
             }
         }
 
     });
+    
+
 }
 
 request.send();
+
+// request.open('GET', 'https://api.rootnet.in/covid19-in/unofficial/covid19india.org/statewise', true);
+// request.onload = function() {
+//     const obj = JSON.parse(this.response)
+//     console.log(obj);
+    
+//     // values = [1,65,8,98,689,12,33,2,3,789];
+//     // var topValues = values.sort((a,b) => b-a).slice(0,5);
+//     // console.log(topValues); // [ 1, 2, 3, 8, 12 ]
+
+
+
+//     // var ctx = document.getElementById('state');
+//     // var myChart = new Chart(ctx, {
+//     //     type: 'doughnut',
+//     // data: {
+//     //     datasets: [{
+//     //         data: [
+//     //            3, 4,5,2,3,4
+//     //         ],
+//     //         backgroundColor: [
+//     //             'rgba(255, 99, 132, 1)',
+//     //             'rgba(54, 162, 235, 1)',
+//     //             'rgba(255, 206, 86, 1)',
+//     //             'rgba(75, 192, 192, 1)',
+//     //             'rgba(153, 102, 255, 1)',
+//     //             'rgba(255, 159, 64, 1)'
+//     //         ],
+//     //         label: 'Dataset 1'
+//     //     }],
+//     //     labels: [
+//     //         'Red',
+//     //         'Orange',
+//     //         'Yellow',
+//     //         'Green',
+//     //         'Blue'
+//     //     ]
+//     // },
+//     // options: {
+//     //     responsive: true,
+//     //     legend: {
+//     //         display: false
+            
+//     //     },
+//     //     animation: {
+//     //         animateScale: true,
+//     //         animateRotate: true
+//     //     }
+//     // }
+//     // });
+// }
+
+// request.send();
